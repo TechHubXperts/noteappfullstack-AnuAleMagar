@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Checkout test files repository
+      - name: Checkout test files
+        uses: actions/checkout@v4
+        with:
+          repository: TechHubXperts/note-app-test-files
+          path: test-files
+          token: ${{ secrets.NOTE_API_SECRET }}
+      
+      # Copy test files and config
+      - name: Copy frontend test files
+        run: |
+          cp -r test-files/frontend/tests/* frontend/tests/
+          cp test-files/frontend/vitest.config.js frontend/vitest.config.js
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm test
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Checkout test files repository
+      - name: Checkout test files
+        uses: actions/checkout@v4
+        with:
+          repository: TechHubXperts/note-app-test-files
+          path: test-files
+          token: ${{ secrets.NOTE_API_SECRET }}
+      
+      # Copy test files
+      - name: Copy backend test files
+        run: |
+          cp -r test-files/backend/tests/* backend/tests/
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      # Note: Students should set up their own MONGODB_URI in .env file or GitHub secrets
+      - run: npm ci
+      
+      # Start backend server in background
+      - name: Start backend server
+        run: |
+          npm run dev &
+          sleep 5  # Wait for server to start
+          # Check if server is running
+          for i in {1..30}; do
+            if curl -f http://localhost:3000/health 2>/dev/null; then
+              echo "Server is up!"
+              break
+            fi
+            echo "Waiting for server... ($i/30)"
+            sleep 2
+          done
+        continue-on-error: false
+      
+      # Run tests (server should be running)
+      - name: Run backend tests
+        run: npm test
+      
+      # Cleanup: kill background server
+      - name: Stop backend server
+        if: always()
+        run: pkill -f "node.*index.js" || true
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Checkout test files repository
+      - name: Checkout test files
+        uses: actions/checkout@v4
+        with:
+          repository: TechHubXperts/note-app-test-files
+          path: test-files
+          token: ${{ secrets.NOTE_API_SECRET }}
+      
+      # Copy playwright directory
+      - name: Copy playwright test files
+        run: |
+          mkdir -p playwright
+          cp -r test-files/playwright/* playwright/
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      # Install frontend dependencies
+      - name: Install frontend dependencies
+        run: |
+          cd frontend && npm ci
+      
+      # Install backend dependencies
+      # Note: Students should set up their own MONGODB_URI in .env file or GitHub secrets
+      - name: Install backend dependencies
+        run: |
+          cd backend && npm ci
+      
+      # Install playwright dependencies
+      - uses: microsoft/playwright@v1
+        with:
+          working-directory: ./playwright
+      - run: npm ci
+        working-directory: ./playwright
+      
+      # Run E2E tests (Playwright will start servers via webServer config)
+      - name: Run E2E tests
+        run: npx playwright test
+        working-directory: ./playwright
+
