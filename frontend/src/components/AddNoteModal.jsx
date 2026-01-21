@@ -155,7 +155,7 @@ export default function AddNoteModal({ isOpen, onClose, onSave }) {
             />
           </div>
         </div>
-
+        <h1>Hello</h1>
         {/* Footer */}
         <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
           <button
