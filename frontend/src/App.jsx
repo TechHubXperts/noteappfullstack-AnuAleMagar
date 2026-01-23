@@ -17,6 +17,7 @@ function App() {
     const fetchNotes = async () => {
       try {
         setLoading(true);
+        console.log("Fetching notes");
         const response = await fetch("http://localhost:3000/api/Notes");
         if (!response.ok) {
           throw new Error("Failed to fetch notes");
