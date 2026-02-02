@@ -110,7 +110,6 @@ function App() {
         onClose={() => setIsAddModalOpen(false)}
         onSave={handleSaveNote}
       />
-      <h1>Hello</h1>
     </div>
   );
 }
