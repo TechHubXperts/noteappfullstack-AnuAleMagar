@@ -26,7 +26,7 @@ export default function NoteList({
             <div
               key={note.id}
               onClick={() => handleNoteClick(note.id)}
-              className={`p-4 border-b border-gray-300 cursor-pointer transition ${
+              className={`p-4 border-b border-gray-300 rounded-lg cursor-pointer transition ${
                 selectedNoteId === note.id
                   ? "bg-purple-100"
                   : "hover:bg-gray-200"

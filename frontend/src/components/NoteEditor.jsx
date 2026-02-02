@@ -1,8 +1,34 @@
-export default function NoteEditor({ note, onDelete }) {
+import { useState, useEffect } from "react";
+
+export default function NoteEditor({ note, onDelete, onUpdate }) {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  useEffect(() => {
+    if (note) {
+      setTitle(note.title || "");
+      setContent(note.content || "");
+    }
+  }, [note]);
+
   const handleDelete = () => {
     if (note) {
       onDelete(note.id);
     }
+  };
+
+  const handleSave = () => {
+    if (!note) return;
+    
+    if (!title.trim()) {
+      alert("Title is required");
+      return;
+    }
+
+    onUpdate(note.id, {
+      title: title.trim(),
+      content: content.trim(),
+    });
   };
 
   const formatDate = (dateString) => {
@@ -22,10 +48,15 @@ export default function NoteEditor({ note, onDelete }) {
   return (
     <div className="flex-1 flex flex-col bg-white p-6">
       <div className="flex justify-between items-start mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            {note.title || "Untitled Note"}
-          </h1>
+        <div className="flex-1 mr-4">
+          <input
+            id="title"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Title"
+            className="text-3xl font-bold text-gray-900 w-full border-none outline-none focus:ring-2 focus:ring-purple-500 rounded px-2 py-1"
+          />
           <div className="text-sm text-gray-500 mt-2">
             <p>Created: {formatDate(note.createdAt)}</p>
             <p>Last updated: {formatDate(note.updatedAt)}</p>
@@ -34,6 +65,7 @@ export default function NoteEditor({ note, onDelete }) {
         <button
           onClick={handleDelete}
           title="Delete note"
+          aria-label="Delete"
           className="text-red-600 hover:text-red-800 transition"
         >
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -46,10 +78,23 @@ export default function NoteEditor({ note, onDelete }) {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <p className="text-gray-700 whitespace-pre-wrap">
-          {note.content || "No content"}
-        </p>
+      <div className="flex-1 flex flex-col mb-4">
+        <textarea
+          id="body"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Start writing your note..."
+          className="flex-1 text-gray-700 whitespace-pre-wrap border-none outline-none focus:ring-2 focus:ring-purple-500 rounded px-2 py-1 resize-none"
+        />
+      </div>
+
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={handleSave}
+          className="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition"
+        >
+          Save
+        </button>
       </div>
     </div>
   );

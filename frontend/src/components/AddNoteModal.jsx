@@ -94,7 +94,7 @@ export default function AddNoteModal({ isOpen, onClose, onSave }) {
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter note title"
+              placeholder="Title"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
@@ -111,7 +111,7 @@ export default function AddNoteModal({ isOpen, onClose, onSave }) {
               id="body"
               value={content}
               onChange={handleContentChange}
-              placeholder="Enter note content"
+              placeholder="Start writing your note..."
               rows="6"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
             />
@@ -155,8 +155,6 @@ export default function AddNoteModal({ isOpen, onClose, onSave }) {
             />
           </div>
         </div>
-        <h1>Hello</h1>
-        <h2>Helo againand </h2>
         {/* Footer */}
         <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
           <button
@@ -169,7 +167,7 @@ export default function AddNoteModal({ isOpen, onClose, onSave }) {
             onClick={handleSave}
             className="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition"
           >
-            Save Note
+            Save
           </button>
         </div>
       </div>

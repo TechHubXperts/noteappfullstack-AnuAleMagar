@@ -67,6 +67,33 @@ function App() {
     }
   };
 
+  const handleUpdateNote = async (noteId, noteData) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/Notes/${noteId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(noteData),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update note");
+      }
+
+      const updatedNote = await response.json();
+      setNotes(
+        notes.map((note) => (note.id === noteId ? updatedNote : note)),
+      );
+    } catch (err) {
+      console.error("Error updating note:", err);
+      alert("Failed to update note");
+    }
+  };
+
   const handleDeleteNote = async (noteId) => {
     try {
       const response = await fetch(
@@ -104,7 +131,7 @@ function App() {
         searchQuery={searchQuery}
         testId="note-list"
       />
-      <NoteEditor note={selectedNote} onDelete={handleDeleteNote} />
+      <NoteEditor note={selectedNote} onDelete={handleDeleteNote} onUpdate={handleUpdateNote} />
       <AddNoteModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
