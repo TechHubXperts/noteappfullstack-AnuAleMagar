@@ -16,7 +16,10 @@ export default function AddNoteModal({ isOpen, onClose, onSave }) {
     }
   }, [isOpen]);
 
-  const handleSave = () => {
+  const handleSave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!title.trim()) {
       alert("Please enter a title");
       return;
@@ -34,11 +37,7 @@ export default function AddNoteModal({ isOpen, onClose, onSave }) {
       attachments: attachments,
     });
 
-    // Reset form
-    setTitle("");
-    setContent("");
-    setTags("");
-    setAttachments([]);
+    // Form will be reset by useEffect when modal closes
   };
 
   const handleBackdropClick = (e) => {
@@ -59,7 +58,10 @@ export default function AddNoteModal({ isOpen, onClose, onSave }) {
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4">
+      <div 
+        className="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900">Add New Note</h2>
@@ -158,13 +160,17 @@ export default function AddNoteModal({ isOpen, onClose, onSave }) {
         {/* Footer */}
         <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
           <button
-            onClick={onClose}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
             className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
+            type="button"
             className="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition"
           >
             Save

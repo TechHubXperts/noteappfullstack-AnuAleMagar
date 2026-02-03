@@ -1,41 +1,50 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Sidebar from "./components/Sidebar";
 import NoteList from "./components/NoteList";
 import NoteEditor from "./components/NoteEditor";
 import AddNoteModal from "./components/AddNoteModal";
+
+const STORAGE_KEY = "notesApp_notes";
+
+// Helper functions for localStorage
+const loadNotesFromStorage = () => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch (err) {
+    console.error("Error loading notes from storage:", err);
+    return [];
+  }
+};
+
+const saveNotesToStorage = (notes) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+  } catch (err) {
+    console.error("Error saving notes to storage:", err);
+  }
+};
 
 function App() {
   const [notes, setNotes] = useState([]);
   const [selectedNoteId, setSelectedNoteId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const isInitialLoadRef = useRef(true);
 
-  // Fetch notes from API on mount
+  // Load notes from localStorage on mount
   useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        setLoading(true);
-        console.log("Fetching notes");
-        const response = await fetch("http://localhost:3000/api/Notes");
-        if (!response.ok) {
-          throw new Error("Failed to fetch notes");
-        }
-        const data = await response.json();
-        setNotes(data);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching notes:", err);
-        setError(err.message);
-        setNotes([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNotes();
+    const loadedNotes = loadNotesFromStorage();
+    setNotes(loadedNotes);
+    isInitialLoadRef.current = false;
   }, []);
+
+  // Save notes to localStorage whenever notes change (but not on initial load)
+  useEffect(() => {
+    if (!isInitialLoadRef.current) {
+      saveNotesToStorage(notes);
+    }
+  }, [notes]);
 
   const selectedNote = notes.find((note) => note.id === selectedNoteId) || null;
 
@@ -43,70 +52,54 @@ function App() {
     setIsAddModalOpen(true);
   };
 
-  const handleSaveNote = async (noteData) => {
+  const handleSaveNote = (noteData) => {
     try {
-      const response = await fetch("http://localhost:3000/api/Notes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(noteData),
-      });
+      const now = new Date().toISOString();
+      const newNote = {
+        id: `note_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        title: noteData.title,
+        content: noteData.content || "",
+        tags: noteData.tags || [],
+        attachments: noteData.attachments || [],
+        createdAt: now,
+        updatedAt: now,
+      };
 
-      if (!response.ok) {
-        throw new Error("Failed to save note");
-      }
-
-      const newNote = await response.json();
+      console.log("Saving note:", newNote);
       setNotes([newNote, ...notes]);
       setIsAddModalOpen(false);
       setSelectedNoteId(newNote.id);
     } catch (err) {
       console.error("Error saving note:", err);
-      alert("Failed to save note");
+      alert(`Failed to save note: ${err.message}`);
     }
   };
 
-  const handleUpdateNote = async (noteId, noteData) => {
+  const handleUpdateNote = (noteId, noteData) => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/Notes/${noteId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(noteData),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update note");
+      const existingNote = notes.find((note) => note.id === noteId);
+      if (!existingNote) {
+        throw new Error("Note not found");
       }
 
-      const updatedNote = await response.json();
-      setNotes(
-        notes.map((note) => (note.id === noteId ? updatedNote : note)),
-      );
+      const updatedNote = {
+        ...existingNote,
+        title: noteData.title,
+        content: noteData.content || "",
+        updatedAt: new Date().toISOString(),
+      };
+
+      console.log("Updating note:", updatedNote);
+      setNotes(notes.map((note) => (note.id === noteId ? updatedNote : note)));
     } catch (err) {
       console.error("Error updating note:", err);
       alert("Failed to update note");
     }
   };
 
-  const handleDeleteNote = async (noteId) => {
+  const handleDeleteNote = (noteId) => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/Notes/${noteId}`,
-        {
-          method: "DELETE",
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete note");
-      }
-
+      console.log("Deleting note:", noteId);
       setNotes(notes.filter((note) => note.id !== noteId));
       if (selectedNoteId === noteId) {
         setSelectedNoteId(null);
