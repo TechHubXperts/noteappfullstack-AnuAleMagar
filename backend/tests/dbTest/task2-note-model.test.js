@@ -124,4 +124,3 @@ test('Task 2: Note model has correct field types', async () => {
     assert.fail(`Test failed: ${error.message}`);
   }
 });
-

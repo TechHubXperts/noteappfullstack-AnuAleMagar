@@ -42,4 +42,3 @@ test('Task 1: MongoDB connection handles invalid URI gracefully', async () => {
     }
   }
 });
-
