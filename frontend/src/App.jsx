@@ -1,50 +1,42 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import NoteList from "./components/NoteList";
 import NoteEditor from "./components/NoteEditor";
 import AddNoteModal from "./components/AddNoteModal";
 
-const STORAGE_KEY = "notesApp_notes";
-
-// Helper functions for localStorage
-const loadNotesFromStorage = () => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch (err) {
-    console.error("Error loading notes from storage:", err);
-    return [];
-  }
-};
-
-const saveNotesToStorage = (notes) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-  } catch (err) {
-    console.error("Error saving notes to storage:", err);
-  }
-};
+const API_BASE_URL = "http://localhost:3000/api/Notes";
 
 function App() {
   const [notes, setNotes] = useState([]);
   const [selectedNoteId, setSelectedNoteId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const isInitialLoadRef = useRef(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Load notes from localStorage on mount
+  // Fetch notes from API on mount
   useEffect(() => {
-    const loadedNotes = loadNotesFromStorage();
-    setNotes(loadedNotes);
-    isInitialLoadRef.current = false;
+    const fetchNotes = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(API_BASE_URL);
+        if (!response.ok) {
+          throw new Error("Failed to fetch notes");
+        }
+        const data = await response.json();
+        setNotes(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching notes:", err);
+        setError(err.message);
+        setNotes([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotes();
   }, []);
-
-  // Save notes to localStorage whenever notes change (but not on initial load)
-  useEffect(() => {
-    if (!isInitialLoadRef.current) {
-      saveNotesToStorage(notes);
-    }
-  }, [notes]);
 
   const selectedNote = notes.find((note) => note.id === selectedNoteId) || null;
 
@@ -52,21 +44,33 @@ function App() {
     setIsAddModalOpen(true);
   };
 
-  const handleSaveNote = (noteData) => {
+  const handleSaveNote = async (noteData) => {
     try {
-      const now = new Date().toISOString();
-      const newNote = {
-        id: `note_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        title: noteData.title,
-        content: noteData.content || "",
-        tags: noteData.tags || [],
-        attachments: noteData.attachments || [],
-        createdAt: now,
-        updatedAt: now,
-      };
+      const response = await fetch(API_BASE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(noteData),
+      });
 
-      console.log("Saving note:", newNote);
-      setNotes([newNote, ...notes]);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to save note: ${response.status}`);
+      }
+
+      const newNote = await response.json();
+      
+      // Refresh notes list from API
+      const refreshResponse = await fetch(API_BASE_URL);
+      if (refreshResponse.ok) {
+        const allNotes = await refreshResponse.json();
+        setNotes(allNotes);
+      } else {
+        // Fallback: add to local state
+        setNotes([newNote, ...notes]);
+      }
+      
       setIsAddModalOpen(false);
       setSelectedNoteId(newNote.id);
     } catch (err) {
@@ -75,32 +79,57 @@ function App() {
     }
   };
 
-  const handleUpdateNote = (noteId, noteData) => {
+  const handleUpdateNote = async (noteId, noteData) => {
     try {
-      const existingNote = notes.find((note) => note.id === noteId);
-      if (!existingNote) {
-        throw new Error("Note not found");
+      const response = await fetch(`${API_BASE_URL}/${noteId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(noteData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update note");
       }
 
-      const updatedNote = {
-        ...existingNote,
-        title: noteData.title,
-        content: noteData.content || "",
-        updatedAt: new Date().toISOString(),
-      };
-
-      console.log("Updating note:", updatedNote);
-      setNotes(notes.map((note) => (note.id === noteId ? updatedNote : note)));
+      const updatedNote = await response.json();
+      
+      // Refresh notes list from API
+      const refreshResponse = await fetch(API_BASE_URL);
+      if (refreshResponse.ok) {
+        const allNotes = await refreshResponse.json();
+        setNotes(allNotes);
+      } else {
+        // Fallback: update local state
+        setNotes(notes.map((note) => (note.id === noteId ? updatedNote : note)));
+      }
     } catch (err) {
       console.error("Error updating note:", err);
       alert("Failed to update note");
     }
   };
 
-  const handleDeleteNote = (noteId) => {
+  const handleDeleteNote = async (noteId) => {
     try {
-      console.log("Deleting note:", noteId);
-      setNotes(notes.filter((note) => note.id !== noteId));
+      const response = await fetch(`${API_BASE_URL}/${noteId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete note");
+      }
+
+      // Refresh notes list from API
+      const refreshResponse = await fetch(API_BASE_URL);
+      if (refreshResponse.ok) {
+        const allNotes = await refreshResponse.json();
+        setNotes(allNotes);
+      } else {
+        // Fallback: remove from local state
+        setNotes(notes.filter((note) => note.id !== noteId));
+      }
+      
       if (selectedNoteId === noteId) {
         setSelectedNoteId(null);
       }

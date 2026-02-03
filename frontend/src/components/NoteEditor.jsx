@@ -46,7 +46,7 @@ export default function NoteEditor({ note, onDelete, onUpdate }) {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white p-6">
+    <div className="flex-1 flex flex-col bg-white p-6" data-testid="note-editor">
       <div className="flex justify-between items-start mb-6">
         <div className="flex-1 mr-4">
           <input
@@ -66,6 +66,7 @@ export default function NoteEditor({ note, onDelete, onUpdate }) {
           onClick={handleDelete}
           title="Delete note"
           aria-label="Delete"
+          data-testid="delete-note-button"
           className="text-red-600 hover:text-red-800 transition"
         >
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">

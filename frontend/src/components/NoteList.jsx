@@ -25,6 +25,7 @@ export default function NoteList({
           {filteredNotes.map((note) => (
             <div
               key={note.id}
+              data-testid={`note-item-${note.id}`}
               onClick={() => handleNoteClick(note.id)}
               className={`p-4 border-b border-gray-300 rounded-lg cursor-pointer transition ${
                 selectedNoteId === note.id
