@@ -7,6 +7,7 @@ export default function Sidebar({ onAddNote, onSearchChange, searchQuery }) {
     <div className="w-64 bg-white border-r border-gray-200 p-4">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-purple-600">NotesApp</h1>
+        <h2 className="text-sm text-gray-500">Your notes, your way</h2>
       </div>
 
       <div className="mb-4">
