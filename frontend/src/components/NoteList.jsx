@@ -5,7 +5,7 @@ export default function NoteList({
   searchQuery,
   testId,
 }) {
-  // Filter notes based on search  fdfdf
+  // Filter notes based on search  fdfdf dfdf
   const filteredNotes = notes.filter(
     (note) =>
       note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
