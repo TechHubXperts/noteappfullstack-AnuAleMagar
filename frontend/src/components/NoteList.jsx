@@ -17,7 +17,10 @@ export default function NoteList({
   };
 
   return (
-    <div className="w-64 bg-gray-100 border-r border-gray-200 overflow-y-auto" data-testid={testId}>
+    <div
+      className="w-64 bg-gray-100 border-r border-gray-200 overflow-y-auto"
+      data-testid={testId}
+    >
       {filteredNotes.length === 0 ? (
         <div className="p-4 text-center text-gray-500">No notes found</div>
       ) : (
@@ -25,9 +28,8 @@ export default function NoteList({
           {filteredNotes.map((note) => (
             <div
               key={note.id}
-              data-testid={`note-item-${note.id}`}
               onClick={() => handleNoteClick(note.id)}
-              className={`p-4 border-b border-gray-300 rounded-lg cursor-pointer transition ${
+              className={`p-4 border-b border-gray-300 cursor-pointer transition ${
                 selectedNoteId === note.id
                   ? "bg-purple-100"
                   : "hover:bg-gray-200"
