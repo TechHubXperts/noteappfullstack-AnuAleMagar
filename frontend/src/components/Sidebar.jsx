@@ -2,7 +2,7 @@ export default function Sidebar({ onAddNote, onSearchChange, searchQuery }) {
   const handleSearchChange = (e) => {
     onSearchChange(e.target.value);
   };
-
+//hello adding new comments here 
   return (
     <div className="w-64 bg-white border-r border-gray-200 p-4">
       <div className="mb-6">
