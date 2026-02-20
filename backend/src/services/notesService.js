@@ -1,16 +1,13 @@
-// In-memory storage for notes
-let notes = [];
-let nextId = 1;
-
-// Helper function to generate unique ID
-const generateId = () => {
-  return `note_${Date.now()}_${nextId++}`;
-};
+import { ObjectId } from "mongodb";
+import { getNotesCollection } from "../config/mongodb.js";
+import { createNoteDocument, formatNoteResponse } from "../models/NoteModel.js";
 
 export const getAllNotes = async () => {
   try {
-    // Return all notes sorted by createdAt (newest first)
-    return notes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const collection = getNotesCollection();
+    const notes = await collection.find({}).sort({ createdAt: -1 }).toArray();
+
+    return notes.map(formatNoteResponse);
   } catch (error) {
     throw new Error(`Failed to fetch notes: ${error.message}`);
   }
@@ -18,8 +15,18 @@ export const getAllNotes = async () => {
 
 export const getNoteById = async (id) => {
   try {
-    const note = notes.find((n) => n.id === id);
-    return note || null;
+    const collection = getNotesCollection();
+
+    // Handle both string ID and ObjectId
+    let objectId;
+    try {
+      objectId = new ObjectId(id);
+    } catch {
+      return null;
+    }
+
+    const note = await collection.findOne({ _id: objectId });
+    return note ? formatNoteResponse(note) : null;
   } catch (error) {
     throw new Error(`Failed to fetch note: ${error.message}`);
   }
@@ -28,25 +35,21 @@ export const getNoteById = async (id) => {
 export const createNote = async (noteData) => {
   try {
     // Validate required fields
-    if (!noteData.title || noteData.title.trim() === '') {
-      throw new Error('Title is required');
+    if (!noteData.title || noteData.title.trim() === "") {
+      throw new Error("Title is required");
     }
 
-    const now = new Date().toISOString();
-    const newNote = {
-      id: generateId(),
-      title: noteData.title.trim(),
-      content: noteData.content || '',
-      tags: Array.isArray(noteData.tags) ? noteData.tags : [],
-      attachments: Array.isArray(noteData.attachments) ? noteData.attachments : [],
-      createdAt: now,
-      updatedAt: now,
-    };
+    const collection = getNotesCollection();
+    const noteDocument = createNoteDocument(noteData);
 
-    notes.push(newNote);
-    return newNote;
+    const result = await collection.insertOne(noteDocument);
+
+    return {
+      id: result.insertedId.toString(),
+      ...noteDocument,
+    };
   } catch (error) {
-    if (error.message === 'Title is required') {
+    if (error.message === "Title is required") {
       throw error;
     }
     throw new Error(`Failed to create note: ${error.message}`);
@@ -55,31 +58,41 @@ export const createNote = async (noteData) => {
 
 export const updateNote = async (id, noteData) => {
   try {
-    const noteIndex = notes.findIndex((n) => n.id === id);
+    const collection = getNotesCollection();
 
-    if (noteIndex === -1) {
+    // Handle both string ID and ObjectId
+    let objectId;
+    try {
+      objectId = new ObjectId(id);
+    } catch {
       return null;
     }
 
     // Validate title if provided
-    if (noteData.title !== undefined && noteData.title.trim() === '') {
-      throw new Error('Title cannot be empty');
+    if (noteData.title !== undefined && noteData.title.trim() === "") {
+      throw new Error("Title cannot be empty");
     }
 
-    const existingNote = notes[noteIndex];
-    const updatedNote = {
-      ...existingNote,
-      title: noteData.title !== undefined ? noteData.title.trim() : existingNote.title,
-      content: noteData.content !== undefined ? noteData.content : existingNote.content,
-      tags: noteData.tags !== undefined ? (Array.isArray(noteData.tags) ? noteData.tags : []) : existingNote.tags,
-      attachments: noteData.attachments !== undefined ? (Array.isArray(noteData.attachments) ? noteData.attachments : []) : existingNote.attachments,
-      updatedAt: new Date().toISOString(),
-    };
+    const updateData = {};
+    if (noteData.title !== undefined) updateData.title = noteData.title.trim();
+    if (noteData.content !== undefined) updateData.content = noteData.content;
+    if (noteData.tags !== undefined)
+      updateData.tags = Array.isArray(noteData.tags) ? noteData.tags : [];
+    if (noteData.attachments !== undefined)
+      updateData.attachments = Array.isArray(noteData.attachments)
+        ? noteData.attachments
+        : [];
+    updateData.updatedAt = new Date();
 
-    notes[noteIndex] = updatedNote;
-    return updatedNote;
+    const result = await collection.findOneAndUpdate(
+      { _id: objectId },
+      { $set: updateData },
+      { returnDocument: "after" },
+    );
+
+    return result.value ? formatNoteResponse(result.value) : null;
   } catch (error) {
-    if (error.message === 'Title cannot be empty') {
+    if (error.message === "Title cannot be empty") {
       throw error;
     }
     throw new Error(`Failed to update note: ${error.message}`);
@@ -88,15 +101,18 @@ export const updateNote = async (id, noteData) => {
 
 export const deleteNote = async (id) => {
   try {
-    const noteIndex = notes.findIndex((n) => n.id === id);
+    const collection = getNotesCollection();
 
-    if (noteIndex === -1) {
+    // Handle both string ID and ObjectId
+    let objectId;
+    try {
+      objectId = new ObjectId(id);
+    } catch {
       return null;
     }
 
-    const deletedNote = notes[noteIndex];
-    notes = notes.filter((n) => n.id !== id);
-    return deletedNote;
+    const result = await collection.findOneAndDelete({ _id: objectId });
+    return result.value ? formatNoteResponse(result.value) : null;
   } catch (error) {
     throw new Error(`Failed to delete note: ${error.message}`);
   }
