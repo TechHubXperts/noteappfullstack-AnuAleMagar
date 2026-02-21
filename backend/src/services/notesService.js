@@ -109,8 +109,8 @@ export const deleteNote = async (id) => {
       return null;
     }
 
-    // INTENTIONALLY BROKEN: Just find the note but DON'T delete it
-    const result = await collection.findOne({ _id: objectId });
+    // mongodb driver v6+ returns the document directly (not {value: doc})
+    const result = await collection.findOneAndDelete({ _id: objectId });
     return result ? formatNoteResponse(result) : null;
   } catch (error) {
     throw new Error(`Failed to delete note: ${error.message}`);
