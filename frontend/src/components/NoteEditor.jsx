@@ -49,12 +49,14 @@ export default function NoteEditor({ note, onDelete, onUpdate }) {
     <div className="flex-1 flex flex-col bg-white p-6" data-testid="note-editor">
       <div className="flex justify-between items-start mb-6">
         <div className="flex-1 mr-4">
+          <label htmlFor="editor-title" className="sr-only">Title</label>
           <input
-            id="title"
+            id="editor-title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Title"
+            aria-label="Title"
             className="text-3xl font-bold text-gray-900 w-full border-none outline-none focus:ring-2 focus:ring-purple-500 rounded px-2 py-1"
           />
           <div className="text-sm text-gray-500 mt-2">
@@ -80,11 +82,13 @@ export default function NoteEditor({ note, onDelete, onUpdate }) {
       </div>
 
       <div className="flex-1 flex flex-col mb-4">
+        <label htmlFor="editor-body" className="sr-only">Content</label>
         <textarea
-          id="body"
+          id="editor-body"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Start writing your note..."
+          placeholder="Content"
+          aria-label="Content"
           className="flex-1 text-gray-700 whitespace-pre-wrap border-none outline-none focus:ring-2 focus:ring-purple-500 rounded px-2 py-1 resize-none"
         />
       </div>

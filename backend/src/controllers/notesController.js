@@ -88,3 +88,12 @@ export const deleteNote = async (req, res) => {
   }
 };
 
+export const resetAllNotes = async (req, res) => {
+  try {
+    const result = await notesService.resetAllNotes();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error resetting notes:', error);
+    res.status(500).json({ error: 'Failed to reset notes' });
+  }
+};

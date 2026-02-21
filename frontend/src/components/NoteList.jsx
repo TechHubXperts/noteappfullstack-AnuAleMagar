@@ -3,9 +3,8 @@ export default function NoteList({
   selectedNoteId,
   onSelectNote,
   searchQuery,
-  testId,
 }) {
-  // Filter notes based on   fdfd dfdfddfdf dfd  dfd
+  // Filter notes based on search query
   const filteredNotes = notes.filter(
     (note) =>
       note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -19,7 +18,7 @@ export default function NoteList({
   return (
     <div
       className="w-64 bg-gray-100 border-r border-gray-200 overflow-y-auto"
-      data-testid={testId}
+      data-testid="note-list"
     >
       {filteredNotes.length === 0 ? (
         <div className="p-4 text-center text-gray-500">No notes found</div>
@@ -29,7 +28,8 @@ export default function NoteList({
             <div
               key={note.id}
               onClick={() => handleNoteClick(note.id)}
-              className={`p-4 border-b border-gray-300 cursor-pointer transition ${
+              data-testid={`note-item-${note.id}`}
+              className={`p-4 rounded-lg cursor-pointer border-b border-gray-300 transition ${
                 selectedNoteId === note.id
                   ? "bg-purple-100"
                   : "hover:bg-gray-200"

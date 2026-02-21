@@ -4,7 +4,23 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
-const DB_NAME = process.env.DB_NAME || "note_app";
+
+// Extract DB name from URI, or use DB_NAME env var, or default to "note_app"
+const getDBName = () => {
+  if (process.env.DB_NAME) return process.env.DB_NAME;
+  try {
+    const url = new URL(MONGO_URI);
+    const dbFromUri = url.pathname.slice(1); // Remove leading /
+    if (dbFromUri) return dbFromUri;
+  } catch {
+    // If URL parsing fails, try regex
+    const match = MONGO_URI.match(/\/([^/?]+)(\?|$)/);
+    if (match && match[1]) return match[1];
+  }
+  return "note_app";
+};
+
+const DB_NAME = getDBName();
 
 let mongoClient = null;
 let db = null;
@@ -27,6 +43,7 @@ export const connectMongoDB = async () => {
     // Create indexes
     await notesCollection.createIndex({ createdAt: -1 });
 
+    console.log(`Using database: ${DB_NAME}`);
     return { db, notesCollection };
   } catch (error) {
     console.error("MongoDB connection error:", error);

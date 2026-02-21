@@ -44,10 +44,7 @@ export const createNote = async (noteData) => {
 
     const result = await collection.insertOne(noteDocument);
 
-    return {
-      id: result.insertedId.toString(),
-      ...noteDocument,
-    };
+    return formatNoteResponse({ ...noteDocument, _id: result.insertedId });
   } catch (error) {
     if (error.message === "Title is required") {
       throw error;
@@ -90,7 +87,8 @@ export const updateNote = async (id, noteData) => {
       { returnDocument: "after" },
     );
 
-    return result.value ? formatNoteResponse(result.value) : null;
+    // mongodb driver v6+ returns the document directly (not {value: doc})
+    return result ? formatNoteResponse(result) : null;
   } catch (error) {
     if (error.message === "Title cannot be empty") {
       throw error;
@@ -111,9 +109,20 @@ export const deleteNote = async (id) => {
       return null;
     }
 
+    // mongodb driver v6+ returns the document directly (not {value: doc})
     const result = await collection.findOneAndDelete({ _id: objectId });
-    return result.value ? formatNoteResponse(result.value) : null;
+    return result ? formatNoteResponse(result) : null;
   } catch (error) {
     throw new Error(`Failed to delete note: ${error.message}`);
+  }
+};
+
+export const resetAllNotes = async () => {
+  try {
+    const collection = getNotesCollection();
+    await collection.deleteMany({});
+    return { message: "All notes deleted successfully" };
+  } catch (error) {
+    throw new Error(`Failed to reset notes: ${error.message}`);
   }
 };
