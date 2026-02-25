@@ -3,6 +3,7 @@ export default function NoteList({
   selectedNoteId,
   onSelectNote,
   searchQuery,
+  testId,
 }) {
   // Filter notes based on search query
   const filteredNotes = notes.filter(
@@ -18,7 +19,7 @@ export default function NoteList({
   return (
     <div
       className="w-64 bg-gray-100 border-r border-gray-200 overflow-y-auto"
-      data-testid="note-list"
+      data-testid={testId}
     >
       {filteredNotes.length === 0 ? (
         <div className="p-4 text-center text-gray-500">No notes found</div>

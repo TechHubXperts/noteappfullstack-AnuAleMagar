@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import NoteList from "./components/NoteList";
 import NoteEditor from "./components/NoteEditor";
@@ -14,32 +14,29 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch notes from API
-  const fetchNotes = useCallback(async () => {
-    try {
-      setLoading(true);
-      console.log("Fetching notes from:", API_BASE_URL);
-      const response = await fetch(API_BASE_URL);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch notes: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log("Notes fetched:", data);
-      setNotes(Array.isArray(data) ? data : []);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching notes:", err);
-      setError(err.message);
-      setNotes([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   // Fetch notes from API on mount
   useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(API_BASE_URL);
+        if (!response.ok) {
+          throw new Error("Failed to fetch notes");
+        }
+        const data = await response.json();
+        setNotes(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching notes:", err);
+        setError(err.message);
+        setNotes([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchNotes();
-  }, [fetchNotes]);
+  }, []);
 
   const selectedNote = notes.find((note) => note.id === selectedNoteId) || null;
 
@@ -58,15 +55,21 @@ function App() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Failed to save note: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`Failed to save note: ${response.status}`);
       }
 
       const newNote = await response.json();
-      console.log("Note created:", newNote);
       
       // Refresh notes list from API
-      await fetchNotes();
+      const refreshResponse = await fetch(API_BASE_URL);
+      if (refreshResponse.ok) {
+        const allNotes = await refreshResponse.json();
+        setNotes(allNotes);
+      } else {
+        // Fallback: add to local state
+        setNotes([newNote, ...notes]);
+      }
       
       setIsAddModalOpen(false);
       setSelectedNoteId(newNote.id);
@@ -87,18 +90,23 @@ function App() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to update note");
+        throw new Error("Failed to update note");
       }
 
       const updatedNote = await response.json();
-      console.log("Note updated:", updatedNote);
       
       // Refresh notes list from API
-      await fetchNotes();
+      const refreshResponse = await fetch(API_BASE_URL);
+      if (refreshResponse.ok) {
+        const allNotes = await refreshResponse.json();
+        setNotes(allNotes);
+      } else {
+        // Fallback: update local state
+        setNotes(notes.map((note) => (note.id === noteId ? updatedNote : note)));
+      }
     } catch (err) {
       console.error("Error updating note:", err);
-      alert(`Failed to update note: ${err.message}`);
+      alert("Failed to update note");
     }
   };
 
@@ -109,21 +117,25 @@ function App() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to delete note");
+        throw new Error("Failed to delete note");
       }
 
-      console.log("Note deleted:", noteId);
-
       // Refresh notes list from API
-      await fetchNotes();
+      const refreshResponse = await fetch(API_BASE_URL);
+      if (refreshResponse.ok) {
+        const allNotes = await refreshResponse.json();
+        setNotes(allNotes);
+      } else {
+        // Fallback: remove from local state
+        setNotes(notes.filter((note) => note.id !== noteId));
+      }
       
       if (selectedNoteId === noteId) {
         setSelectedNoteId(null);
       }
     } catch (err) {
       console.error("Error deleting note:", err);
-      alert(`Failed to delete note: ${err.message}`);
+      alert("Failed to delete note");
     }
   };
 
@@ -139,6 +151,7 @@ function App() {
         selectedNoteId={selectedNoteId}
         onSelectNote={setSelectedNoteId}
         searchQuery={searchQuery}
+        testId="note-list"
       />
       <NoteEditor note={selectedNote} onDelete={handleDeleteNote} onUpdate={handleUpdateNote} />
       <AddNoteModal
