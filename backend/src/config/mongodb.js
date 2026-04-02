@@ -2,7 +2,7 @@ import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 
 dotenv.config();
-//t6
+//t7
 const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
 // this is temporary comment
 // TEMPORARY: Force Atlas to test if grader blocks outbound. If backend still starts, egress is not blocked (bug).
