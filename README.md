@@ -20,6 +20,23 @@ note-app/
 
 ## Getting Started
 
+### Install Dependencies (Required)
+This project has three separate `package.json` files (root, `backend`, and `frontend`), so you must run `npm install` in each respective directory:
+
+```bash
+# 1) Root (for Husky and repository-level scripts)
+cd .
+npm install
+
+# 2) Backend
+cd backend
+npm install
+
+# 3) Frontend
+cd ../frontend
+npm install
+```
+
 ### Frontend Setup
 ```bash
 cd frontend

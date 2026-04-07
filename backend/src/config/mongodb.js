@@ -2,27 +2,7 @@ import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 
 dotenv.config();
-//t11
-const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
-// this is temporary comment
-// TEMPORARY: Force Atlas to test if grader blocks outbound. If backend still starts, egress is not blocked (bug).
-const ATLAS_URI =
-  "mongodb+srv://anumagar354_db_user:password123456789@cluster0.mfzqclk.mongodb.net/?appName=Cluster0";
-
-const getDBName = () => {
-  if (process.env.DB_NAME) return process.env.DB_NAME;
-  try {
-    const url = new URL(ATLAS_URI);
-    const dbFromUri = url.pathname.slice(1);
-    if (dbFromUri) return dbFromUri;
-  } catch {
-    const match = ATLAS_URI.match(/\/([^/?]+)(\?|$)/);
-    if (match && match[1]) return match[1];
-  }
-  return "note_app";
-};
-
-const DB_NAME = getDBName();
+const MONGO_URI = process.env.MONGODB_URI;
 
 let mongoClient = null;
 let db = null;
@@ -30,21 +10,25 @@ let notesCollection = null;
 
 export const connectMongoDB = async () => {
   try {
+    if (!MONGO_URI) {
+      throw new Error("Missing required environment variable: MONGODB_URI");
+    }
+
     if (mongoClient && db) {
       console.log("MongoDB already connected");
       return { db, notesCollection };
     }
 
-    mongoClient = new MongoClient(ATLAS_URI);
+    mongoClient = new MongoClient(MONGO_URI);
     await mongoClient.connect();
     console.log("MongoDB connected successfully");
 
-    db = mongoClient.db(DB_NAME);
+    db = mongoClient.db();
     notesCollection = db.collection("notes");
 
     await notesCollection.createIndex({ createdAt: -1 });
 
-    console.log(`Using database: ${DB_NAME}`);
+    console.log(`Using database: ${db.databaseName}`);
     return { db, notesCollection };
   } catch (error) {
     console.error("MongoDB connection error:", error);
