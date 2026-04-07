@@ -3,22 +3,22 @@ import * as notesController from '../controllers/notesController.js';
 
 const router = express.Router();
 
-// GET /api/Notes - Get all notes
+// GET /api/notes - Get all notes
 router.get('/', notesController.getAllNotes);
 
-// GET /api/Notes/:id - Get a single note by ID
+// GET /api/notes/:id - Get a single note by ID
 router.get('/:id', notesController.getNoteById);
 
-// POST /api/Notes - Create a new note
+// POST /api/notes - Create a new note
 router.post('/', notesController.createNote);
 
-// PUT /api/Notes/:id - Update a note
+// PUT /api/notes/:id - Update a note
 router.put('/:id', notesController.updateNote);
 
-// DELETE /api/Notes/reset/all - Delete all notes (must come before /:id)
+// DELETE /api/notes/reset/all - Delete all notes (must come before /:id)
 router.delete('/reset/all', notesController.resetAllNotes);
 
-// DELETE /api/Notes/:id - Delete a note
+// DELETE /api/notes/:id - Delete a note
 router.delete('/:id', notesController.deleteNote);
 
 export default router;

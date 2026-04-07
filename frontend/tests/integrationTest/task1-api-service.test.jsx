@@ -12,7 +12,7 @@ describe('Task 1: API Service Layer', () => {
     vi.restoreAllMocks();
   });
 
-  it('Task 1: API service fetches all notes from /api/Notes', async () => {
+  it('Task 1: API service fetches all notes from /api/notes', async () => {
     const mockNotes = [
       {
         id: '1',
@@ -34,20 +34,20 @@ describe('Task 1: API Service Layer', () => {
     // Import the API service module (test behavior, not specific function names)
     const apiModule = await import('../../src/utils/api.js');
     
-    // Find the function that makes GET request to /api/Notes (function with 0 parameters)
+    // Find the function that makes GET request to /api/notes (function with 0 parameters)
     const exportedFunctions = Object.values(apiModule).filter(fn => typeof fn === 'function');
     const getAllFunction = exportedFunctions.find(fn => fn.length === 0);
     
     expect(getAllFunction).toBeDefined();
     const notes = await getAllFunction();
     
-    // Verify it made GET request to /api/Notes
-    expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/api/Notes');
+    // Verify it made GET request to /api/notes
+    expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/api/notes');
     expect(notes).toEqual(mockNotes);
     expect(Array.isArray(notes)).toBe(true);
   });
 
-  it('Task 1: API service fetches single note from /api/Notes/:id', async () => {
+  it('Task 1: API service fetches single note from /api/notes/:id', async () => {
     const mockNote = {
       id: '123',
       title: 'Individual Note',
@@ -66,11 +66,11 @@ describe('Task 1: API Service Layer', () => {
 
     const apiModule = await import('../../src/utils/api.js');
     
-    // Find function that takes one parameter (id) - should make GET to /api/Notes/:id
+    // Find function that takes one parameter (id) - should make GET to /api/notes/:id
     const exportedFunctions = Object.values(apiModule).filter(fn => typeof fn === 'function' && fn.length === 1);
     expect(exportedFunctions.length).toBeGreaterThan(0);
     
-    // Try functions until we find one that makes GET to /api/Notes/:id
+    // Try functions until we find one that makes GET to /api/notes/:id
     let found = false;
     for (const getByIdFunction of exportedFunctions) {
       vi.clearAllMocks();
@@ -84,7 +84,7 @@ describe('Task 1: API Service Layer', () => {
         const note = await getByIdFunction('123');
         const fetchCalls = global.fetch.mock.calls;
         const getCall = fetchCalls.find(call => 
-          call[0] === 'http://localhost:3000/api/Notes/123'
+          call[0] === 'http://localhost:3000/api/notes/123'
         );
         if (getCall && (!getCall[1] || !getCall[1].method || getCall[1].method === 'GET')) {
           expect(note).toEqual(mockNote);
@@ -100,7 +100,7 @@ describe('Task 1: API Service Layer', () => {
     expect(found).toBe(true);
   });
 
-  it('Task 1: API service creates note via POST /api/Notes', async () => {
+  it('Task 1: API service creates note via POST /api/notes', async () => {
     const newNoteData = {
       title: 'New Note',
       content: 'New content',
@@ -141,7 +141,7 @@ describe('Task 1: API Service Layer', () => {
         const result = await createFunction(newNoteData);
         const fetchCalls = global.fetch.mock.calls;
         const postCall = fetchCalls.find(call => 
-          call[0] === 'http://localhost:3000/api/Notes' && 
+          call[0] === 'http://localhost:3000/api/notes' && 
           call[1]?.method === 'POST' &&
           call[1]?.body && 
           JSON.parse(call[1].body).title === newNoteData.title
@@ -160,7 +160,7 @@ describe('Task 1: API Service Layer', () => {
     expect(found).toBe(true);
   });
 
-  it('Task 1: API service deletes note via DELETE /api/Notes/:id', async () => {
+  it('Task 1: API service deletes note via DELETE /api/notes/:id', async () => {
     global.fetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -187,7 +187,7 @@ describe('Task 1: API Service Layer', () => {
         await deleteFunction('789');
         const fetchCalls = global.fetch.mock.calls;
         const deleteCall = fetchCalls.find(call => 
-          call[0] === 'http://localhost:3000/api/Notes/789' && 
+          call[0] === 'http://localhost:3000/api/notes/789' && 
           (!call[1] || call[1]?.method === 'DELETE')
         );
         if (deleteCall) {

@@ -39,8 +39,8 @@ function makeRequest(method, path, body = null) {
   });
 }
 
-test('Task 1: GET /api/Notes returns array with valid structure', async () => {
-  const response = await makeRequest('GET', '/api/Notes');
+test('Task 1: GET /api/notes returns array with valid structure', async () => {
+  const response = await makeRequest('GET', '/api/notes');
   assert.strictEqual(response.status, 200);
   assert(Array.isArray(response.body));
   // Verify array structure - if notes exist, they should have required fields
@@ -56,10 +56,10 @@ test('Task 1: GET /api/Notes returns array with valid structure', async () => {
   }
 });
 
-test('Task 1: GET /api/Notes returns all notes with correct format', async () => {
+test('Task 1: GET /api/notes returns all notes with correct format', async () => {
   // This test assumes notes may already exist from other sources
-  // We're only testing that GET /api/Notes returns them correctly
-  const response = await makeRequest('GET', '/api/Notes');
+  // We're only testing that GET /api/notes returns them correctly
+  const response = await makeRequest('GET', '/api/notes');
   assert.strictEqual(response.status, 200);
   assert(Array.isArray(response.body));
   // Verify all returned items are valid note objects

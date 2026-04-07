@@ -126,11 +126,11 @@ Build a RESTful API backend for the notes application using Node.js. All data wi
 **Objective:** Implement an API endpoint to retrieve all notes.
 
 **Requirements:**
-- Create GET endpoint `/api/Notes`
+- Create GET endpoint `/api/notes`
 - Return all notes as JSON array
 - Handle empty state (return empty array)
 
-**API Endpoint:** `GET /api/Notes`
+**API Endpoint:** `GET /api/notes`
 
 **Test File:** `backend/tests/task1-get-notes.test.js`
 
@@ -138,12 +138,12 @@ Build a RESTful API backend for the notes application using Node.js. All data wi
 **Objective:** Implement an API endpoint to retrieve a single note by ID.
 
 **Requirements:**
-- Create GET endpoint `/api/Notes/:id`
+- Create GET endpoint `/api/notes/:id`
 - Return note object if found
 - Return 404 error if note not found
 - Validate ID parameter
 
-**API Endpoint:** `GET /api/Notes/:id`
+**API Endpoint:** `GET /api/notes/:id`
 
 **Test File:** `backend/tests/task2-get-individual-note.test.js`
 
@@ -151,13 +151,13 @@ Build a RESTful API backend for the notes application using Node.js. All data wi
 **Objective:** Implement an API endpoint to delete a note by ID.
 
 **Requirements:**
-- Create DELETE endpoint `/api/Notes/:id`
+- Create DELETE endpoint `/api/notes/:id`
 - Delete note if found
 - Return success message
 - Return 404 error if note not found
 - Validate ID parameter
 
-**API Endpoint:** `DELETE /api/Notes/:id`
+**API Endpoint:** `DELETE /api/notes/:id`
 
 **Test File:** `backend/tests/task3-delete-note.test.js`
 
@@ -165,14 +165,14 @@ Build a RESTful API backend for the notes application using Node.js. All data wi
 **Objective:** Implement an API endpoint to create a new note.
 
 **Requirements:**
-- Create POST endpoint `/api/Notes`
+- Create POST endpoint `/api/notes`
 - Accept JSON body with: title, content, tags (array), attachments (array)
 - Generate unique ID and timestamps (createdAt, updatedAt)
 - Return created note object
 - Validate required fields (title is required)
 - Handle validation errors
 
-**API Endpoint:** `POST /api/Notes`
+**API Endpoint:** `POST /api/notes`
 
 **Request Body:**
 ```json
@@ -196,16 +196,16 @@ npm test
 
 Run tests for specific task (single test file only):
 ```bash
-# Work on Task 1 (GET /api/Notes) → Run:
+# Work on Task 1 (GET /api/notes) → Run:
 npm run test:single tests/task1-get-notes.test.js
 
-# Work on Task 2 (GET /api/Notes/:id) → Run:
+# Work on Task 2 (GET /api/notes/:id) → Run:
 npm run test:single tests/task2-get-individual-note.test.js
 
-# Work on Task 3 (DELETE /api/Notes/:id) → Run:
+# Work on Task 3 (DELETE /api/notes/:id) → Run:
 npm run test:single tests/task3-delete-note.test.js
 
-# Work on Task 4 (POST /api/Notes) → Run:
+# Work on Task 4 (POST /api/notes) → Run:
 npm run test:single tests/task4-add-new-note.test.js
 ```
 
@@ -294,7 +294,7 @@ Before starting Milestone 3, you need to set up MongoDB Atlas:
 
 **Test File:** `backend/tests/dbTest/task3-database-crud.test.js`
 
-**Note:** API endpoints remain the same as Milestone 2 (`GET /api/Notes`, `GET /api/Notes/:id`, `POST /api/Notes`, `DELETE /api/Notes/:id`). Use environment variable `MONGODB_URI` for connection string.
+**Note:** API endpoints remain the same as Milestone 2 (`GET /api/notes`, `GET /api/notes/:id`, `POST /api/notes`, `DELETE /api/notes/:id`). Use environment variable `MONGODB_URI` for connection string.
 
 ### Testing Milestone 3
 
@@ -333,7 +333,7 @@ Integrate the React frontend with the Node.js backend API. Replace localStorage 
 **Requirements:**
 - Create API service utilities to replace localStorage functions
 - Implement functions: `getNotes()`, `getNoteById()`, `createNote()`, `deleteNote()`
-- Use `fetch` to make HTTP requests to `http://localhost:3000/api/Notes`
+- Use `fetch` to make HTTP requests to `http://localhost:3000/api/notes`
 - Handle API errors (network errors, 404, 500, etc.)
 
 **Test File:** `frontend/tests/integrationTest/task1-api-service.test.jsx`
@@ -350,7 +350,7 @@ Integrate the React frontend with the Node.js backend API. Replace localStorage 
 
 **Test File:** `frontend/tests/integrationTest/task2-components-api.test.jsx`
 
-**Note:** API endpoints: `GET /api/Notes`, `GET /api/Notes/:id`, `POST /api/Notes`, `DELETE /api/Notes/:id`. Frontend should work seamlessly with backend (no localStorage).
+**Note:** API endpoints: `GET /api/notes`, `GET /api/notes/:id`, `POST /api/notes`, `DELETE /api/notes/:id`. Frontend should work seamlessly with backend (no localStorage).
 
 ### Testing Milestone 4
 

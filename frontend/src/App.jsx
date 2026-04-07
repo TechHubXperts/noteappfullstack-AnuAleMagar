@@ -4,7 +4,7 @@ import NoteList from "./components/NoteList";
 import NoteEditor from "./components/NoteEditor";
 import AddNoteModal from "./components/AddNoteModal";
 
-const API_BASE_URL = "http://localhost:3000/api/Notes";
+const API_BASE_URL = "http://localhost:3000/api/notes";
 
 function App() {
   const [notes, setNotes] = useState([]);

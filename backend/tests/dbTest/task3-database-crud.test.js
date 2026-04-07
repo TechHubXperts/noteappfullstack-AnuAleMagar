@@ -44,7 +44,7 @@ function makeRequest(method, path, body = null) {
   });
 }
 
-test('Task 3: GET /api/Notes fetches from MongoDB', async () => {
+test('Task 3: GET /api/notes fetches from MongoDB', async () => {
   const uniqueId = Date.now();
   const newNote = {
     title: `Database Test Note ${uniqueId}`,
@@ -54,22 +54,22 @@ test('Task 3: GET /api/Notes fetches from MongoDB', async () => {
   };
   
   // Create a note first
-  const createResponse = await makeRequest('POST', '/api/Notes', newNote);
+  const createResponse = await makeRequest('POST', '/api/notes', newNote);
   assert.strictEqual(createResponse.status, 200);
   const createdNote = createResponse.body;
   assert(createdNote.id);
   
   // Get all notes
-  const getAllResponse = await makeRequest('GET', '/api/Notes');
+  const getAllResponse = await makeRequest('GET', '/api/notes');
   assert.strictEqual(getAllResponse.status, 200);
   assert(Array.isArray(getAllResponse.body));
   assert(getAllResponse.body.some(note => note.id === createdNote.id));
   
   // Cleanup
-  await makeRequest('DELETE', `/api/Notes/${createdNote.id}`);
+  await makeRequest('DELETE', `/api/notes/${createdNote.id}`);
 });
 
-test('Task 3: GET /api/Notes/:id fetches from MongoDB by ObjectId', async () => {
+test('Task 3: GET /api/notes/:id fetches from MongoDB by ObjectId', async () => {
   const uniqueId = Date.now();
   const newNote = {
     title: `Individual DB Test ${uniqueId}`,
@@ -78,21 +78,21 @@ test('Task 3: GET /api/Notes/:id fetches from MongoDB by ObjectId', async () => 
     attachments: [],
   };
   
-  const createResponse = await makeRequest('POST', '/api/Notes', newNote);
+  const createResponse = await makeRequest('POST', '/api/notes', newNote);
   assert.strictEqual(createResponse.status, 200);
   const noteId = createResponse.body.id;
   
   // Get individual note
-  const getResponse = await makeRequest('GET', `/api/Notes/${noteId}`);
+  const getResponse = await makeRequest('GET', `/api/notes/${noteId}`);
   assert.strictEqual(getResponse.status, 200);
   assert.strictEqual(getResponse.body.id, noteId);
   assert.strictEqual(getResponse.body.title, `Individual DB Test ${uniqueId}`);
   
   // Cleanup
-  await makeRequest('DELETE', `/api/Notes/${noteId}`);
+  await makeRequest('DELETE', `/api/notes/${noteId}`);
 });
 
-test('Task 3: POST /api/Notes saves to MongoDB', async () => {
+test('Task 3: POST /api/notes saves to MongoDB', async () => {
   const uniqueId = Date.now();
   const newNote = {
     title: `Save to DB ${uniqueId}`,
@@ -101,7 +101,7 @@ test('Task 3: POST /api/Notes saves to MongoDB', async () => {
     attachments: ['file.pdf'],
   };
   
-  const response = await makeRequest('POST', '/api/Notes', newNote);
+  const response = await makeRequest('POST', '/api/notes', newNote);
   assert.strictEqual(response.status, 200);
   assert(response.body.id);
   assert.strictEqual(response.body.title, `Save to DB ${uniqueId}`);
@@ -112,15 +112,15 @@ test('Task 3: POST /api/Notes saves to MongoDB', async () => {
   assert(response.body.updatedAt);
   
   // Verify it's persisted by fetching again
-  const getResponse = await makeRequest('GET', `/api/Notes/${response.body.id}`);
+  const getResponse = await makeRequest('GET', `/api/notes/${response.body.id}`);
   assert.strictEqual(getResponse.status, 200);
   assert.strictEqual(getResponse.body.title, `Save to DB ${uniqueId}`);
   
   // Cleanup
-  await makeRequest('DELETE', `/api/Notes/${response.body.id}`);
+  await makeRequest('DELETE', `/api/notes/${response.body.id}`);
 });
 
-test('Task 3: DELETE /api/Notes/:id deletes from MongoDB', async () => {
+test('Task 3: DELETE /api/notes/:id deletes from MongoDB', async () => {
   const uniqueId = Date.now();
   const newNote = {
     title: `Delete Test ${uniqueId}`,
@@ -129,25 +129,25 @@ test('Task 3: DELETE /api/Notes/:id deletes from MongoDB', async () => {
     attachments: [],
   };
   
-  const createResponse = await makeRequest('POST', '/api/Notes', newNote);
+  const createResponse = await makeRequest('POST', '/api/notes', newNote);
   assert.strictEqual(createResponse.status, 200);
   const noteId = createResponse.body.id;
   
   // Verify it exists
-  const getBefore = await makeRequest('GET', `/api/Notes/${noteId}`);
+  const getBefore = await makeRequest('GET', `/api/notes/${noteId}`);
   assert.strictEqual(getBefore.status, 200);
   
   // Delete it
-  const deleteResponse = await makeRequest('DELETE', `/api/Notes/${noteId}`);
+  const deleteResponse = await makeRequest('DELETE', `/api/notes/${noteId}`);
   assert.strictEqual(deleteResponse.status, 200);
   
   // Verify it's deleted
-  const getAfter = await makeRequest('GET', `/api/Notes/${noteId}`);
+  const getAfter = await makeRequest('GET', `/api/notes/${noteId}`);
   assert.strictEqual(getAfter.status, 404);
 });
 
 test('Task 3: Invalid ObjectId returns 404', async () => {
-  const response = await makeRequest('GET', '/api/Notes/invalid-object-id-123');
+  const response = await makeRequest('GET', '/api/notes/invalid-object-id-123');
   assert.strictEqual(response.status, 404);
 });
 

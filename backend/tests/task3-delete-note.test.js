@@ -39,7 +39,7 @@ function makeRequest(method, path, body = null) {
   });
 }
 
-test('Task 3: DELETE /api/Notes/:id deletes note successfully', async () => {
+test('Task 3: DELETE /api/notes/:id deletes note successfully', async () => {
   // Setup: Create a note first (using POST - this is just setup, not what we're testing)
   const uniqueId = Date.now();
   const setupNote = {
@@ -48,28 +48,28 @@ test('Task 3: DELETE /api/Notes/:id deletes note successfully', async () => {
     tags: ['test', 'delete'],
     attachments: [],
   };
-  const createResponse = await makeRequest('POST', '/api/Notes', setupNote);
+  const createResponse = await makeRequest('POST', '/api/notes', setupNote);
   assert.strictEqual(createResponse.status, 200);
   const createdNote = createResponse.body;
   assert(createdNote.id);
   const noteId = createdNote.id;
 
   // Verify note exists before deletion
-  const getBeforeDelete = await makeRequest('GET', `/api/Notes/${noteId}`);
+  const getBeforeDelete = await makeRequest('GET', `/api/notes/${noteId}`);
   assert.strictEqual(getBeforeDelete.status, 200);
 
-  // Test: DELETE /api/Notes/:id - This is what we're actually testing
-  const deleteResponse = await makeRequest('DELETE', `/api/Notes/${noteId}`);
+  // Test: DELETE /api/notes/:id - This is what we're actually testing
+  const deleteResponse = await makeRequest('DELETE', `/api/notes/${noteId}`);
   assert.strictEqual(deleteResponse.status, 200);
   assert(deleteResponse.body.message);
 
   // Verify note is deleted
-  const getAfterDelete = await makeRequest('GET', `/api/Notes/${noteId}`);
+  const getAfterDelete = await makeRequest('GET', `/api/notes/${noteId}`);
   assert.strictEqual(getAfterDelete.status, 404);
 });
 
-test('Task 3: DELETE /api/Notes/:id returns 404 when note not found', async () => {
-  const response = await makeRequest('DELETE', '/api/Notes/nonexistent-id-12345');
+test('Task 3: DELETE /api/notes/:id returns 404 when note not found', async () => {
+  const response = await makeRequest('DELETE', '/api/notes/nonexistent-id-12345');
   assert.strictEqual(response.status, 404);
 });
 

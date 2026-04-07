@@ -39,7 +39,7 @@ function makeRequest(method, path, body = null) {
   });
 }
 
-test('Task 4: POST /api/Notes creates note with all fields', async () => {
+test('Task 4: POST /api/notes creates note with all fields', async () => {
   // Use unique identifier to avoid conflicts with other tests
   const uniqueId = Date.now();
   const newNote = {
@@ -49,7 +49,7 @@ test('Task 4: POST /api/Notes creates note with all fields', async () => {
     attachments: ['file1.pdf', 'image.jpg'],
   };
 
-  const response = await makeRequest('POST', '/api/Notes', newNote);
+  const response = await makeRequest('POST', '/api/notes', newNote);
   assert.strictEqual(response.status, 200);
   assert(response.body.id);
   assert.strictEqual(response.body.title, `Complete Test Note ${uniqueId}`);
@@ -60,14 +60,14 @@ test('Task 4: POST /api/Notes creates note with all fields', async () => {
   assert(response.body.updatedAt);
 });
 
-test('Task 4: POST /api/Notes creates note with minimal fields', async () => {
+test('Task 4: POST /api/notes creates note with minimal fields', async () => {
   // Use unique identifier to avoid conflicts with other tests
   const uniqueId = Date.now();
   const newNote = {
     title: `Minimal Note ${uniqueId}`,
   };
 
-  const response = await makeRequest('POST', '/api/Notes', newNote);
+  const response = await makeRequest('POST', '/api/notes', newNote);
   assert.strictEqual(response.status, 200);
   assert(response.body.id);
   assert.strictEqual(response.body.title, `Minimal Note ${uniqueId}`);
@@ -78,12 +78,12 @@ test('Task 4: POST /api/Notes creates note with minimal fields', async () => {
   assert(response.body.updatedAt);
 });
 
-test('Task 4: POST /api/Notes returns 400 when title is missing', async () => {
+test('Task 4: POST /api/notes returns 400 when title is missing', async () => {
   const newNote = {
     content: 'Note without title',
   };
 
-  const response = await makeRequest('POST', '/api/Notes', newNote);
+  const response = await makeRequest('POST', '/api/notes', newNote);
   assert.strictEqual(response.status, 400);
 });
 

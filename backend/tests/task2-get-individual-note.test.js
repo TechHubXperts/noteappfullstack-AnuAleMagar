@@ -39,7 +39,7 @@ function makeRequest(method, path, body = null) {
   });
 }
 
-test('Task 2: GET /api/Notes/:id returns note when found', async () => {
+test('Task 2: GET /api/notes/:id returns note when found', async () => {
   // Setup: Create a note first (using POST - this is just setup, not what we're testing)
   // In a real scenario, notes would already exist
   const uniqueId = Date.now();
@@ -49,13 +49,13 @@ test('Task 2: GET /api/Notes/:id returns note when found', async () => {
     tags: ['test'],
     attachments: [],
   };
-  const createResponse = await makeRequest('POST', '/api/Notes', setupNote);
+  const createResponse = await makeRequest('POST', '/api/notes', setupNote);
   assert.strictEqual(createResponse.status, 200);
   const createdNote = createResponse.body;
   assert(createdNote.id);
 
-  // Test: GET /api/Notes/:id - This is what we're actually testing
-  const response = await makeRequest('GET', `/api/Notes/${createdNote.id}`);
+  // Test: GET /api/notes/:id - This is what we're actually testing
+  const response = await makeRequest('GET', `/api/notes/${createdNote.id}`);
   assert.strictEqual(response.status, 200);
   assert.strictEqual(response.body.id, createdNote.id);
   assert.strictEqual(response.body.title, `Individual Test Note ${uniqueId}`);
@@ -66,8 +66,8 @@ test('Task 2: GET /api/Notes/:id returns note when found', async () => {
   assert(response.body.updatedAt);
 });
 
-test('Task 2: GET /api/Notes/:id returns 404 when note not found', async () => {
-  const response = await makeRequest('GET', '/api/Notes/nonexistent-id-12345');
+test('Task 2: GET /api/notes/:id returns 404 when note not found', async () => {
+  const response = await makeRequest('GET', '/api/notes/nonexistent-id-12345');
   assert.strictEqual(response.status, 404);
 });
 
