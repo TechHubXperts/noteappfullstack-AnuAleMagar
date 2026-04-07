@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
+set -e
+
+npm run contracts:precommit >/dev/null 2>&1
 
 printf '\n'
 printf '██████╗ ██████╗ ██╗         ███████╗██╗   ██╗███████╗████████╗███████╗███╗   ███╗\n'
@@ -11,5 +14,3 @@ printf '\n'
 printf 'Code successfully submitted.\n'
 printf 'Please see the platform for score.\n'
 printf '\n'
-#!/usr/bin/env sh
-npm run contracts:prepush
