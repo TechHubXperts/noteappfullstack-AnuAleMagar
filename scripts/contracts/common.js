@@ -38,7 +38,9 @@ export const validateStaticContracts = () => {
 
   const backendIndex = readFile("backend/src/index.js");
   if (!/3000/.test(backendIndex) || !/listen\(/.test(backendIndex)) {
-    fail("Backend port contract failed: backend should listen on port 3000.");
+    fail(
+      "Backend port contract failed: set backend/src/index.js to use port 3000, e.g. const PORT = process.env.PORT || 3000;",
+    );
   }
   if (!/app\.use\(["']\/api\/notes["']/.test(backendIndex)) {
     fail("API route contract failed: /api/notes route mount must exist in backend/src/index.js.");
@@ -53,7 +55,9 @@ export const validateStaticContracts = () => {
 
   const viteConfig = readFile(viteConfigPath);
   if (!/5173/.test(viteConfig)) {
-    fail("Frontend port contract failed: Vite must listen on 5173.");
+    fail(
+      "Frontend port contract failed: set frontend/vite.config.* server.port to 5173.",
+    );
   }
 
   // DB env naming contract:

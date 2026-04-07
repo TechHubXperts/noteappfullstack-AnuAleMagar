@@ -20,6 +20,14 @@ note-app/
 
 ## Getting Started
 
+### Husky Contract Notes
+- If commit/push fails with backend port contract, set `backend/src/index.js` to use:
+  `const PORT = process.env.PORT || 3000;`
+- If commit/push fails with frontend port contract, set `frontend/vite.config.js` (or `.ts`) to:
+  `server: { port: 5173 }`
+- `backend/.env` must be gitignored and must not be tracked.
+- If a DB env key is used, use `MONGODB_URI` only.
+
 ### Install Dependencies (Required)
 This project has three separate `package.json` files (root, `backend`, and `frontend`), so you must run `npm install` in each respective directory:
 
