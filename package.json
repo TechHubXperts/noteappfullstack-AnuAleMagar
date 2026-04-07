@@ -4,8 +4,7 @@
   "type": "module",
   "scripts": {
     "prepare": "husky",
-    "contracts:precommit": "node scripts/contracts/precommit.js",
-    "contracts:prepush": "node scripts/contracts/prepush.js"
+    "contracts:precommit": "node scripts/contracts/precommit.js"
   },
   "devDependencies": {
     "husky": "^9.1.7"
