@@ -4,7 +4,15 @@ import NoteList from "./components/NoteList";
 import NoteEditor from "./components/NoteEditor";
 import AddNoteModal from "./components/AddNoteModal";
 
-const API_BASE_URL = "http://localhost:3000/api/notes";
+const apiNotesBase = () => {
+  const base = import.meta.env.VITE_API_URL?.trim();
+  if (base) {
+    return `${base.replace(/\/$/, "")}/api/notes`;
+  }
+  return "/api/notes";
+};
+
+const API_BASE_URL = apiNotesBase();
 
 function App() {
   const [notes, setNotes] = useState([]);

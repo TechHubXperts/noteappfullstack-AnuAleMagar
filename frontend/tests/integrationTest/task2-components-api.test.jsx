@@ -44,7 +44,7 @@ describe('Task 2: Components API Integration', () => {
 
     await waitFor(() => {
       // Verify fetch was called with GET /api/notes
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/api/notes');
+      expect(global.fetch).toHaveBeenCalledWith('/api/notes');
     });
 
     // Verify notes are displayed (may appear in both list and editor, so use getAllByText)
@@ -89,7 +89,7 @@ describe('Task 2: Components API Integration', () => {
 
     // Wait for initial load
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/api/notes');
+      expect(global.fetch).toHaveBeenCalledWith('/api/notes');
     });
 
     // Click Add button
@@ -111,7 +111,7 @@ describe('Task 2: Components API Integration', () => {
       // Verify POST request was made to create note
       const fetchCalls = global.fetch.mock.calls;
       const postCall = fetchCalls.find(call => 
-        call[0] === 'http://localhost:3000/api/notes' && 
+        call[0] === '/api/notes' && 
         call[1]?.method === 'POST' &&
         call[1]?.body && 
         JSON.parse(call[1].body).title.includes('New API Note')
@@ -160,7 +160,7 @@ describe('Task 2: Components API Integration', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/api/notes');
+      expect(global.fetch).toHaveBeenCalledWith('/api/notes');
     });
 
     // Select note (click on the note in the list, not the editor)
@@ -170,7 +170,7 @@ describe('Task 2: Components API Integration', () => {
 
     await waitFor(() => {
       // Verify GET request was made for single note
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/api/notes/1');
+      expect(global.fetch).toHaveBeenCalledWith('/api/notes/1');
     });
 
     // Click delete button
@@ -185,7 +185,7 @@ describe('Task 2: Components API Integration', () => {
         // Verify DELETE request was made
         const fetchCalls = global.fetch.mock.calls;
         const deleteCall = fetchCalls.find(call => 
-          call[0] === 'http://localhost:3000/api/notes/1' && 
+          call[0] === '/api/notes/1' && 
           (!call[1] || call[1]?.method === 'DELETE')
         );
         expect(deleteCall).toBeDefined();

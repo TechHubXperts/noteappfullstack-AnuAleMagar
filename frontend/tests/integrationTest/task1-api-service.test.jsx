@@ -42,7 +42,7 @@ describe('Task 1: API Service Layer', () => {
     const notes = await getAllFunction();
     
     // Verify it made GET request to /api/notes
-    expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/api/notes');
+    expect(global.fetch).toHaveBeenCalledWith('/api/notes');
     expect(notes).toEqual(mockNotes);
     expect(Array.isArray(notes)).toBe(true);
   });
@@ -84,7 +84,7 @@ describe('Task 1: API Service Layer', () => {
         const note = await getByIdFunction('123');
         const fetchCalls = global.fetch.mock.calls;
         const getCall = fetchCalls.find(call => 
-          call[0] === 'http://localhost:3000/api/notes/123'
+          call[0] === '/api/notes/123'
         );
         if (getCall && (!getCall[1] || !getCall[1].method || getCall[1].method === 'GET')) {
           expect(note).toEqual(mockNote);
@@ -141,7 +141,7 @@ describe('Task 1: API Service Layer', () => {
         const result = await createFunction(newNoteData);
         const fetchCalls = global.fetch.mock.calls;
         const postCall = fetchCalls.find(call => 
-          call[0] === 'http://localhost:3000/api/notes' && 
+          call[0] === '/api/notes' && 
           call[1]?.method === 'POST' &&
           call[1]?.body && 
           JSON.parse(call[1].body).title === newNoteData.title
@@ -187,7 +187,7 @@ describe('Task 1: API Service Layer', () => {
         await deleteFunction('789');
         const fetchCalls = global.fetch.mock.calls;
         const deleteCall = fetchCalls.find(call => 
-          call[0] === 'http://localhost:3000/api/notes/789' && 
+          call[0] === '/api/notes/789' && 
           (!call[1] || call[1]?.method === 'DELETE')
         );
         if (deleteCall) {
