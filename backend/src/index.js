@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { connectMongoDB } from "./config/mongodb.js";
 import notesRoutes from "./routes/notesRoutes.js";
+import healthRoutes from "./routes/healthRoutes.js";
 
 dotenv.config();
 
@@ -25,13 +26,10 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/notes", notesRoutes);
+app.use("/health", healthRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Hello World" });
-});
-
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok", message: "Server is running" });
 });
 
 app.use((req, res) => {
