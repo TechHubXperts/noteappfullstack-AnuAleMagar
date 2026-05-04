@@ -6,7 +6,7 @@ export const getAllNotes = async (req, res) => {
     res.status(200).json(notes);
   } catch (error) {
     console.error('Error fetching notes:', error);
-    res.status(500).json({ error: 'Failed to fetch notes' });
+    res.status(500).json({ error: 'fsdff to fetch notes' });
   }
 };
 
