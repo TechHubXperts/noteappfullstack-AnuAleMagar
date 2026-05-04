@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 
 app.use("/health", healthRoutes);
 
-app.use("api/notes", notesRoutes);
+app.use("/api/notes", notesRoutes);
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Hello World" });
 });
