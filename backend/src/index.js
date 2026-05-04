@@ -25,7 +25,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/notes", notesRoutes);
+// app.use("/api/notes", notesRoutes);
 app.use("/health", healthRoutes);
 
 app.get("/", (req, res) => {
